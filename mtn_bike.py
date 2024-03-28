@@ -29,7 +29,7 @@ from fitparse import FitFile
 
 
 st.image('NR.png', width = 150)
-st.title("Mountain Bike IMU Analysis")
+st.title("Nolan Riding GPS Analysis")
 
 def calculate_hrv_from_hr(heart_rates):
     # Convert HR to approximate IBIs
@@ -155,7 +155,7 @@ if uploaded_data is not None:
 	st.plotly_chart(fig)
 
 else: 
-	st.header('Uploadd GPX File')
+	st.header('Upload FIT File')
 
 
 
