@@ -157,7 +157,7 @@ if uploaded_data is not None:
 
 	col1, col2, col3, col4 = st.columns(4)
 	with col1: 
-		st.metric('Total Distance (Km)', round(df['distance'].max()/1000),2)
+		st.metric('Total Distance (Km)', round(df['distance'].max()/1000, 2))
 		st.metric('Average Heart Rate (BPM)', round(df['heart_rate'].mean(),2))
 	with col2: 
 		st.metric('Top Speed (m/s)', df['enhanced_speed'].max())
