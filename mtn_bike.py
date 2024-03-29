@@ -77,18 +77,9 @@ if uploaded_data is not None:
 
 	path = '/Users/danielgeneau/Documents/Projects/Moutnain Bike GPS/Dan Geneau/11903516635_ACTIVITY.fit'
 	df = read_fit_file_into_dataframe(datapath)
-	col1, col2, col3, col4 = st.columns(4)
-	with col1: 
-		st.metric('Total Distance (Km)', df['distance'].max()/1000)
-	with col2: 
-		st.metric('Top Speed (m/s)', df['enhanced_speed'].max())
-	with col3: 
-		st.metric('Average Speed (m/s)', round(df['enhanced_speed'].mean(),2))
-	with col4: 
-		st.metric('Average Speed (m/s)', round(df['enhanced_speed'].mean(),2))
-	st.metric('Average Heart Rate (BPM)', round(df['heart_rate'].mean(),2))
-	
 
+	start_time = st.number_input('Segment Start', value = 0)
+	end_time = st.number_input('Segment End', value = len(df['timestamp'])-1)
 
 
 	fig1 = go.Figure()
@@ -137,8 +128,47 @@ if uploaded_data is not None:
 	    ),
 	)
 
+	# Add vertical dotted line for 'start'
+	fig1.add_shape(type="line",
+	               x0=df['timestamp'][start_time], y0=0, x1=df['timestamp'][start_time], y1=1,
+	               line=dict(color="RoyalBlue", width=2, dash="dot"),
+	               xref="x", yref="paper")
+
+	# Add vertical dotted line for 'end'
+	fig1.add_shape(type="line",
+	               x0=df['timestamp'][end_time], y0=0, x1=df['timestamp'][end_time], y1=1,
+	               line=dict(color="RoyalBlue", width=2, dash="dot"),
+	               xref="x", yref="paper")
+
+	# Add annotation for 'start'
+	fig1.add_annotation(x=df['timestamp'][start_time], y=0.05, xref="x", yref="paper",
+	                    text="Start", showarrow=False, font=dict(color="RoyalBlue"))
+
+	# Add annotation for 'end'
+	fig1.add_annotation(x=df['timestamp'][end_time], y=0.05, xref="x", yref="paper",
+	                    text="End", showarrow=False, font=dict(color="RoyalBlue"))
+
 	# Display the plot in Streamlit
 	st.plotly_chart(fig1)
+
+	df = df[start_time:end_time].reset_index(drop=True)	
+	#display calculations
+	HRV = calculate_hrv_from_hr(df['heart_rate'])
+
+	col1, col2, col3, col4 = st.columns(4)
+	with col1: 
+		st.metric('Total Distance (Km)', df['distance'].max()/1000)
+		st.metric('Average Heart Rate (BPM)', round(df['heart_rate'].mean(),2))
+	with col2: 
+		st.metric('Top Speed (m/s)', df['enhanced_speed'].max())
+		st.metric('Heart Rate Variability', round(HRV, 2))
+	with col3: 
+		st.metric('Average Speed (m/s)', round(df['enhanced_speed'].mean(),2))
+	with col4: 
+		st.metric('Average Speed (m/s)', round(df['enhanced_speed'].mean(),2))
+
+
+
 
 	fig = go.Figure(data=[go.Scatter3d(
 		    x=df['position_long'],
